@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "MXCharacter.generated.h"
+#include "MXCharacterBase.generated.h"
 
 UCLASS()
-class PROJECTMX_API AMXCharacter : public ACharacter
+class PROJECTMX_API AMXCharacterBase : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	AMXCharacter();
+	AMXCharacterBase();
 
 protected:
 	// Called when the game starts or when spawned
