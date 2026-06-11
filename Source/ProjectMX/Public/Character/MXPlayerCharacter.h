@@ -6,6 +6,8 @@
 #include "MXCharacterBase.h"
 #include "MXPlayerCharacter.generated.h"
 
+struct FInputActionValue;
+class UMXInputConfig;
 class UCameraComponent;
 class USpringArmComponent;
 class UInputMappingContext;
@@ -42,6 +44,14 @@ protected:
 #pragma endregion
 	
 protected:
-	UPROPERTY(VisibleDefaultsOnly, Category = "Input")
+	UPROPERTY(VisibleAnywhere, Category = "Input")
 	TObjectPtr<UInputMappingContext> InputMappingContext;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Input")
+	TObjectPtr<UMXInputConfig> PlayerControllerInputConfig;
+	
+private:
+	void Move(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
+	void Jump(const FInputActionValue& Value);
 };
