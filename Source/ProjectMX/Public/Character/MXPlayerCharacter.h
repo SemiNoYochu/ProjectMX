@@ -7,6 +7,7 @@
 #include "MXPlayerCharacter.generated.h"
 
 struct FInputActionValue;
+class UCurveFloat;
 class UMXInputConfig;
 class UCameraComponent;
 class USpringArmComponent;
@@ -60,6 +61,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UMXInputConfig> PlayerControllerInputConfig;
 	
+	// 속도에 따른 FOV 변화를 정의하는 곡선 에셋
+	UPROPERTY(EditAnywhere, Category = "Camera|Dynamic")
+	TObjectPtr<UCurveFloat> FOVCurve;
+ 
+	// 속도에 따른 카메라 거리 변화를 정의하는 곡선 에셋
+	UPROPERTY(EditAnywhere, Category = "Camera|Dynamic")
+	TObjectPtr<UCurveFloat> ArmLengthCurve;
+ 
+	// 기준이 되는 대쉬 속도 (이 속도일 때 커브의 끝점에 도달한다고 계산함)
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float DashSpeed = 2000.0f;
  
