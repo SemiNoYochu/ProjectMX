@@ -13,4 +13,7 @@ UCLASS()
 class PROJECTMX_API AMXGameMode : public AGameMode
 {
 	GENERATED_BODY()
+	
+public:
+	AMXGameMode();
 };

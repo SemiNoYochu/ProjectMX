@@ -7,6 +7,7 @@
 #include "MXPlayerCharacter.generated.h"
 
 struct FInputActionValue;
+class UCurveFloat;
 class UMXInputConfig;
 class UCameraComponent;
 class USpringArmComponent;
@@ -43,15 +44,43 @@ protected:
 	
 #pragma endregion
 	
+#pragma region DynamicCamera
+	
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "Input")
+	
+	
+private:
+	void UpdateDynamicCamera(float DeltaTime);
+	
+#pragma endregion
+	
+protected:
+	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputMappingContext> InputMappingContext;
 	
-	UPROPERTY(VisibleAnywhere, Category = "Input")
+	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UMXInputConfig> PlayerControllerInputConfig;
+	
+	// 속도에 따른 FOV 변화를 정의하는 곡선 에셋
+	UPROPERTY(EditAnywhere, Category = "Camera|Dynamic")
+	TObjectPtr<UCurveFloat> FOVCurve;
+ 
+	// 속도에 따른 카메라 거리 변화를 정의하는 곡선 에셋
+	UPROPERTY(EditAnywhere, Category = "Camera|Dynamic")
+	TObjectPtr<UCurveFloat> ArmLengthCurve;
+ 
+	// 기준이 되는 대쉬 속도 (이 속도일 때 커브의 끝점에 도달한다고 계산함)
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float DashSpeed = 2000.0f;
+ 
+	bool bIsDashing = false;
+	float DefaultMaxSpeed;
 	
 private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
-	void Jump(const FInputActionValue& Value);
+	virtual void Jump() override;
+	
+	void StartDash();
+	void StopDash();
 };
