@@ -1,5 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
+﻿
 
 #include "Character/MXPlayerCharacter.h"
 
@@ -13,11 +12,10 @@
 #include "Internal/ComponentUtils.h"
 #include "Internal/InputUtils.h"
 
+#pragma region Override ACharacter
 
-// Sets default values
 AMXPlayerCharacter::AMXPlayerCharacter()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
 	bUseControllerRotationPitch = false;
@@ -28,14 +26,16 @@ AMXPlayerCharacter::AMXPlayerCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 450.0f, 0.0f);
 	
 	SpringArmComponent = ComponentUtils::CreateComponent<USpringArmComponent>(this);
-	SpringArmComponent->TargetArmLength = 300.f;
+	SpringArmComponent->TargetArmLength = 600.f;
 	SpringArmComponent->bUsePawnControlRotation = true;
 	
-	CameraComponent = ComponentUtils::CreateComponent<UCameraComponent>(this, true, SpringArmComponent);
+	SpringArmComponent->bEnableCameraLag = true;
+	SpringArmComponent->CameraLagSpeed = 10.0f;
+	
+	CameraComponent = ComponentUtils::CreateComponent<UCameraComponent>(this, true, SpringArmComponent, USpringArmComponent::SocketName);
 	CameraComponent->bUsePawnControlRotation = false;
 }
 
-// Called when the game starts or when spawned
 void AMXPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -43,13 +43,13 @@ void AMXPlayerCharacter::BeginPlay()
 	InputUtils::AddInputMapping(this, InputMappingContext);
 }
 
-// Called every frame
 void AMXPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	UpdateDynamicCamera(DeltaTime);
 }
 
-// Called to bind functionality to input
 void AMXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -60,10 +60,29 @@ void AMXPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(PlayerControllerInputConfig->Move, ETriggerEvent::Triggered, this, &ThisClass::Move);
 		EnhancedInputComponent->BindAction(PlayerControllerInputConfig->Look, ETriggerEvent::Triggered, this, &ThisClass::Look);
 		
-		EnhancedInputComponent->BindAction(PlayerControllerInputConfig->Jump, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(PlayerControllerInputConfig->Jump, ETriggerEvent::Completed, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(PlayerControllerInputConfig->Jump, ETriggerEvent::Started, this, &ThisClass::Jump);
+		EnhancedInputComponent->BindAction(PlayerControllerInputConfig->Jump, ETriggerEvent::Completed, this, &ThisClass::Jump);
+		
+		EnhancedInputComponent->BindAction(PlayerControllerInputConfig->Dash, ETriggerEvent::Started, this, &ThisClass::StartDash);
+		EnhancedInputComponent->BindAction(PlayerControllerInputConfig->Dash, ETriggerEvent::Completed, this, &ThisClass::StopDash);
 	}
 }
+
+#pragma endregion
+
+#pragma region DynamicCamera
+
+void AMXPlayerCharacter::UpdateDynamicCamera(float DeltaTime)
+{
+	if (IsValid(GetCharacterMovement()) == true)
+	{
+		
+	}
+}
+
+#pragma endregion
+
+#pragma region InputAction
 
 void AMXPlayerCharacter::Move(const FInputActionValue& Value)
 {
@@ -80,7 +99,7 @@ void AMXPlayerCharacter::Move(const FInputActionValue& Value)
 		const FVector RightVector = FRotationMatrix(YawRotator).GetUnitAxis(EAxis::Y);
 		AddMovementInput(RightVector, MovementVector.Y);
 		
-		MYSCREENLOG("MoveAction X: %f, Y: %f", MovementVector.X, MovementVector.Y);
+		// MYSCREENLOG("MoveAction X: %f, Y: %f", MovementVector.X, MovementVector.Y);
 	}
 }
 
@@ -93,7 +112,7 @@ void AMXPlayerCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookVector.X);
 		AddControllerPitchInput(LookVector.Y);
 		
-		MYSCREENLOG("LookAction X: %f, Y: %f", LookVector.X, LookVector.Y);
+		// MYSCREENLOG("LookAction X: %f, Y: %f", LookVector.X, LookVector.Y);
 	}
 }
 
@@ -101,6 +120,26 @@ void AMXPlayerCharacter::Jump()
 {
 	Super::Jump();
 	
-	MYSCREENLOG("JumpAction is true");
+	// MYSCREENLOG("JumpAction is true");
 }
+
+void AMXPlayerCharacter::StartDash()
+{
+	bIsDashing = true;
+	
+	GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
+	
+	MYSCREENLOG("StartDashAction is true");
+}
+
+void AMXPlayerCharacter::StopDash()
+{
+	bIsDashing = false;
+	
+	GetCharacterMovement()->MaxWalkSpeed = DefaultMaxSpeed;
+	
+	MYSCREENLOG("StopDashAction is true");
+}
+
+#pragma endregion
 

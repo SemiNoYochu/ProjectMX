@@ -43,6 +43,16 @@ protected:
 	
 #pragma endregion
 	
+#pragma region DynamicCamera
+	
+protected:
+	
+	
+private:
+	void UpdateDynamicCamera(float DeltaTime);
+	
+#pragma endregion
+	
 protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputMappingContext> InputMappingContext;
@@ -50,8 +60,17 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UMXInputConfig> PlayerControllerInputConfig;
 	
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float DashSpeed = 2000.0f;
+ 
+	bool bIsDashing = false;
+	float DefaultMaxSpeed;
+	
 private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	virtual void Jump() override;
+	
+	void StartDash();
+	void StopDash();
 };
