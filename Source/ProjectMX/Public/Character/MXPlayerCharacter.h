@@ -44,14 +44,14 @@ protected:
 #pragma endregion
 	
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "Input")
+	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputMappingContext> InputMappingContext;
 	
-	UPROPERTY(VisibleAnywhere, Category = "Input")
+	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UMXInputConfig> PlayerControllerInputConfig;
 	
 private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
-	void Jump(const FInputActionValue& Value);
+	virtual void Jump() override;
 };
